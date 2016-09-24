@@ -3,7 +3,7 @@ import RxBlocking
 import Nimble
 
 // This is handy so we can write expect(o) == 1 instead of expect(o.value) == 1 or whatever.
-public func equalFirst<T: Equatable, O: ObservableType where O.E == T>(expectedValue: T?) -> MatcherFunc<O> {
+public func equalFirst<T: Equatable, O: ObservableType>(_ expectedValue: T?) -> MatcherFunc<O> where O.E == T {
     return MatcherFunc { actualExpression, failureMessage in
 
         failureMessage.postfixMessage = "equal <\(expectedValue)>"
@@ -14,7 +14,7 @@ public func equalFirst<T: Equatable, O: ObservableType where O.E == T>(expectedV
     }
 }
 
-public func equalFirst<T: Equatable>(expectedValue: T?) -> MatcherFunc<Variable<T>> {
+public func equalFirst<T: Equatable>(_ expectedValue: T?) -> MatcherFunc<Variable<T>> {
     return MatcherFunc { actualExpression, failureMessage in
 
         failureMessage.postfixMessage = "equal <\(expectedValue)>"
@@ -25,38 +25,38 @@ public func equalFirst<T: Equatable>(expectedValue: T?) -> MatcherFunc<Variable<
     }
 }
 
-public func equalFirst<T: Equatable, O: ObservableType where O.E == T?>(expectedValue: T?) -> MatcherFunc<O> {
+public func equalFirst<T: Equatable, O: ObservableType>(_ expectedValue: T?) -> MatcherFunc<O> where O.E == T? {
     return MatcherFunc { actualExpression, failureMessage in
 
         failureMessage.postfixMessage = "equal <\(expectedValue)>"
         let actualValue = try actualExpression.evaluate()?.toBlocking().first()
 
         switch actualValue {
-        case .None:
+        case .none:
             return expectedValue == nil
-        case .Some(let wrapped):
+        case .some(let wrapped):
             return wrapped == expectedValue
         }
     }
 }
 
-public func equalFirst<T: Equatable>(expectedValue: T?) -> MatcherFunc<Variable<T?>> {
+public func equalFirst<T: Equatable>(_ expectedValue: T?) -> MatcherFunc<Variable<T?>> {
     return MatcherFunc { actualExpression, failureMessage in
 
         failureMessage.postfixMessage = "equal <\(expectedValue)>"
         let actualValue = try actualExpression.evaluate()?.value
 
         switch actualValue {
-        case .None:
+        case .none:
             return expectedValue == nil
-        case .Some(let wrapped):
+        case .some(let wrapped):
             return wrapped == expectedValue
         }
     }
 }
 
 // Applies to Observables of T, which must conform to Equatable.
-public func ==<T: Equatable, O: ObservableType where O.E == T>(lhs: Expectation<O>, rhs: T?) {
+public func ==<T: Equatable, O: ObservableType>(lhs: Expectation<O>, rhs: T?) where O.E == T {
     lhs.to( equalFirst(rhs) )
 }
 
@@ -64,7 +64,7 @@ public func ==<T: Equatable>(lhs: Expectation<Variable<T>>, rhs: T?) {
     lhs.to( equalFirst(rhs) )
 }
 
-public func ==<T: Equatable, O: ObservableType where O.E == Optional<T>>(lhs: Expectation<O>, rhs: T?) {
+public func ==<T: Equatable, O: ObservableType>(lhs: Expectation<O>, rhs: T?) where O.E == Optional<T> {
     lhs.to( equalFirst(rhs) )
 }
 
